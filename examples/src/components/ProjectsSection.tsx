@@ -1,0 +1,152 @@
+
+import React, { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import ProjectCard from './ProjectCard';
+
+// Sample projects data
+const portfolioProjects = [
+  {
+    company: "Acme公司",
+    year: "2022年",
+    title: "深色SaaS落地页",
+    results: [
+      { title: "提升用户体验40%" },
+      { title: "提高网站速度50%" },
+      { title: "增加移动端流量35%" },
+    ],
+    link: "https://tailwindui.com/templates/salient",
+    image: "https://images.unsplash.com/photo-010-xxxxxxxx05-98d2b5aba04b?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    company: "创新科技",
+    year: "2021年",
+    title: "明亮SaaS落地页",
+    results: [
+      { title: "提升销售额20%" },
+      { title: "扩大客户覆盖35%" },
+      { title: "提高品牌知名度15%" },
+    ],
+    link: "https://vercel.com/templates",
+    image: "https://images.unsplash.com/photo-010-xxxxxxxx84-dccba630e2f6?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    company: "量子动力",
+    year: "2023年",
+    title: "AI初创企业落地页",
+    results: [
+      { title: "提升用户体验40%" },
+      { title: "提高网站速度50%" },
+      { title: "增加移动端流量35%" },
+    ],
+    link: "https://ui.shadcn.com/examples",
+    image: "https://images.unsplash.com/photo-010-xxxxxxxx23-c5249f4df085?auto=format&fit=crop&w=800&q=80",
+  },
+];
+
+const ProjectsSection: React.FC = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Enhanced scroll tracking for animations
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"]
+  });
+  
+  // Parallax values for different elements
+  const opacityGradientTop = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
+  const opacityGradientBottom = useTransform(scrollYProgress, [0.7, 1], [0, 1]);
+
+  return (
+    <section 
+      id="works" 
+      ref={sectionRef}
+      className="py-16 md:py-24 lg:py-32 overflow-hidden relative"
+    >
+      {/* White grid background */}
+      <div className="absolute inset-0 z-0">
+        {/* White grid pattern with higher contrast - now static (no scroll effect) */}
+        <div className="absolute inset-0 pointer-events-none grid-background" />
+        
+        {/* Enhanced top gradient fade with smoother transition */}
+        <motion.div 
+          className="absolute top-0 left-0 right-0 h-80 bg-gradient-to-b from-black via-black/80 to-transparent z-10 pointer-events-none fade-transition"
+          style={{ opacity: opacityGradientTop }}
+        />
+        
+        {/* Enhanced bottom gradient fade with smoother transition */}
+        <motion.div 
+          className="absolute bottom-0 left-0 right-0 h-80 bg-gradient-to-t from-black via-black/80 to-transparent z-10 pointer-events-none fade-transition"
+          style={{ opacity: opacityGradientBottom }}
+        />
+
+        {/* Ambient glow spots with enhanced visibility */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-amber-900/20 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-1/3 right-1/5 w-80 h-80 rounded-full bg-blue-900/20 blur-[100px] pointer-events-none" />
+      </div>
+
+      <div className="container mx-auto px-6 lg:px-8 relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
+          <motion.p 
+            className="text-sm uppercase tracking-widest text-amber-200 font-medium mb-2"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            精选项目
+          </motion.p>
+          
+          <motion.h2 
+            className="text-3xl md:text-5xl font-bold text-white mb-4"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            我的作品
+          </motion.h2>
+          
+          <motion.p 
+            className="text-lg text-white/70"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            探索我为成果而设计的创新数字解决方案作品集
+          </motion.p>
+        </div>
+
+        <div className="relative" ref={containerRef}>
+          {/* Card container with stacking perspective */}
+          <div 
+            className="relative w-full mx-auto"
+            style={{
+              maxWidth: '1200px',
+              minHeight: '600px', // Reduced height for better mobile display
+              perspective: '1000px'
+            }}
+          >
+            {/* Stacked cards with reversed order so first card appears at bottom */}
+            {[...portfolioProjects].reverse().map((project, reversedIndex) => {
+              // Calculate the original index (since we reversed the array)
+              const originalIndex = portfolioProjects.length - 1 - reversedIndex;
+              
+              return (
+                <ProjectCard 
+                  key={originalIndex} 
+                  project={project} 
+                  index={reversedIndex}
+                  scrollY={0} // Pass 0 as scrollY to make elements static
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default ProjectsSection;
